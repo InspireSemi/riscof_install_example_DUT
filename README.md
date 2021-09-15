@@ -39,8 +39,6 @@ Clone and compile Sail, clone sail plugin and riscv-arch-test<br>
 Install under RHEL8<br>
 
 This will install riscof under your ~/.local/bin dir<br>
-NOTE: Using this to upgrade/update riscof seems to have a<br>
-problem in that it asks for sudo access and wants to install under /usr/local//bin<br>
 ./install_scripts/install_riscof_rhel8.sh<br>
 
 Test riscof by running riscof --help, you should see something similar to:
