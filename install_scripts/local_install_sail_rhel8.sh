@@ -9,7 +9,7 @@ make
 make install
 
 # copy opam 
-cp ./opam/opam-2.1.0-x86_64-linux ~/.local/bin
+cp ./opam/opam-2.1.0-x86_64-linux ~/.local/bin/opam
 
 # Setup opam
 opam init -y --disable-sandboxing
