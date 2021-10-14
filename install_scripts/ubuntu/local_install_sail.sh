@@ -9,7 +9,7 @@ eval $(opam config env)
 # Clone sail-riscv 
 git clone https://github.com/rems-project/sail-riscv.git
 
-# Make sail 
+# MAek sail 
 cd sail-riscv
 make
 ARCH=RV32 make

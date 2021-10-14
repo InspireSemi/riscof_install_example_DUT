@@ -8,6 +8,8 @@ cd build
 make
 make install
 
+cd ..
+
 # copy opam 
 cp ./opam/opam-2.1.0-x86_64-linux ~/.local/bin/opam
 
@@ -26,13 +28,12 @@ make
 ARCH=RV32 make
 ARCH=RV64 make
 
+cd .. 
+
 #Uncomment these if you want to add links to the sail binaries
 # Otherwise use the sailpath.sh to set the PATH for the sail binaries
 #ln -s sail-riscv/c_emulator/riscv_sim_RV64 /usr/bin/riscv_sim_RV64
 #ln -s sail-riscv/c_emulator/riscv_sim_RV32 /usr/bin/riscv_sim_RV32
-
-# Clone the Sail ref Plugin
-git clone https://github.com/rems-project/sail-riscv.git
 
 # Clone the arch-test repo
 git clone https://github.com/riscv/riscv-arch-test.git

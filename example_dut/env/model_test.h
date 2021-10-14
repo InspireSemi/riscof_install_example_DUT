@@ -1,10 +1,9 @@
 #ifndef _COMPLIANCE_MODEL_H
 #define _COMPLIANCE_MODEL_H
 
-/* Opencore Uart */
-//#define UART0_CTRL_ADDR 0x2F208000
-/* Fast Uart SIM only */
-#define UART0_CTRL_ADDR 0x2F208700
+/* Uart */
+/* Base Address for Uart goes here */
+#define UART0_CTRL_ADDR 0x00
 
 #define  UART_BASE UART0_CTRL_ADDR
 #define UART0_CTRL_SIZE 0x10
@@ -35,44 +34,14 @@
 	38400: 54 = 0x36
 	57600: 36 = 0x24
 	115200: 18 = 0x12 
-	1041000: 2 = 0x02 Sim Only
-	3125000: 1 = 0x01 FastUart Sim Only
 	*/
-
-// Base address of GPIO 0-31
-#define GPIO_ADDR 0x2f200000
-#define GPIO_WR_OFFSET 0
-#define GPIO_RD_OFFSET 4
-#define GPIO_RXEN_OFFSET 44
-#define GPIO_TXEN_OFFSET 48
-#define GPIO13_SET 0x2000
-#define GPIO13_CLR 0xFFFFDFFF
-
-#define GPIO_INIT \
-  li t0, GPIO_ADDR; \
-  li t1, GPIO13_SET; \
-  lw t2, GPIO_TXEN_OFFSET(t0); \
-  or t1, t1, t2; \
-  sw t1, GPIO_TXEN_OFFSET(t0); \
-  li t1, GPIO13_CLR; \
-  lw t2, GPIO_RXEN_OFFSET(t0); \
-  and t1, t1, t2; \
-  sw t1, GPIO_RXEN_OFFSET(t0);
-
-#define GPIO_SET_13 \
-  li t0, GPIO_ADDR; \
-  li t1, GPIO13_SET; \
-  lw t2, GPIO_WR_OFFSET(t0); \
-  or t1, t1, t2; \
-  sw t1, GPIO_WR_OFFSET(t0);
-
 
 #define RV64UARTINIT \
 	li	a0,UART_BASE; \
 	sb	zero,UART_IER(a0);	/*  disable interrupts */ \
 	li	t1,0x80; \
 	sb	t1,UART_LCR(a0);		/*  set DLAB (divisor latch access bit) to hi */ \
-	li	t1,0x01;			/*  Change based on the crystal/baud rate. &&&&&*/ \
+	li	t1,0x18;			/*  Change based on the crystal/baud rate. &&&&&*/ \
 	and	t1,t1,0xff;		/*  first drop the upper byte of the half word */ \
 	sb	t1,UART_DLL(a0);	/*  store divisor LSB in DLL */ \
 	li	t1,0x02;				/*  Change based on the crystal/baud rate. &&&&&*/ \
@@ -110,26 +79,8 @@
 
 //RV_COMPLIANCE_HALT
 #define RVMODEL_HALT                                              \
-        GPIO_SET_13; \
-        RVMODEL_IO_WRITE_STR(t6, "GPIO13\n"); \
 9999: \
         j 9999b;
-
-
-/* 
-        la s10, begin_signature; \
-        la s11, end_signature; \
-        RVMODEL_IO_WRITE_STR(t6, "Signature Begin\n"); \
-1: \
-        ld a0, 0(s10); \
-        LOCAL_IO_PUSH(t6) \
-        jal FN_WriteNmbr; \
-        RVMODEL_IO_WRITE_STR2("\n") \
-        LOCAL_IO_POP(t6) \
-        add s10, s10, 8; \
-        blt s10, s11, 1b; \
-        RVMODEL_IO_WRITE_STR(t6, "Sigature End\n"); \
-*/
 
 
 //RV_COMPLIANCE_DATA_BEGIN
@@ -143,53 +94,12 @@
 
 //RVMODEL_IO_INIT
 #define RVMODEL_IO_INIT \
-    RV64UARTINIT; \
-    GPIO_INIT;
+    RV64UARTINIT;
 
 //RVMODEL_BOOT
 #define RVMODEL_BOOT \
 .section .text.init; \
-  csrr a0, mhartid	;\
-  li   a1, 0x3f		;\
-  beq  a1, a0, cont	;\
-55: \
-  wfi ;\
-  j 55b ;\
-cont: ;\
   RVMODEL_IO_INIT;
-
-/*
-  la t0, _data_strings; \
-  la t1, _fstext; \
-  la t2, _estext; \
-1: \
-  lw t3, 0(t0); \
-  sw t3, 0(t1); \
-  addi t0, t0, 4; \
-  addi t1, t1, 4; \
-  bltu t1, t2, 1b; \
-  la t0, _data_lma; \
-  la t1, _data; \
-  la t2, _edata; \
-1: \
-  lw t3, 0(t0); \
-  sw t3, 0(t1); \
-  addi t0, t0, 4; \
-  addi t1, t1, 4; \
-  bltu t1, t2, 1b; \
-*/
-
-
-/* This will put all Harts other than Boot Hart in a Wait state. With a mtvec = local sram for each Hart. */
-#define smp_wait(reg1, reg2)  \
-  csrr reg1, mhartid				;\
-  li   reg2, NONSMP_HART		;\
-  beq  reg1, reg2, cont			;\
-  slli reg2, reg1, 15       ;\
-  csrw mtvec, reg2           ;\
-  wfi    					;\
-  mret            ;\
-cont: 
 
 //RVTEST_IO_WRITE_STR
 // _SP = (volatile register)
@@ -281,39 +191,11 @@ FN_WriteNmbr: \
 // _SP = (volatile register)
 // _R = GPR
 // _I = Immediate
-#if 0
-
 #define RVMODEL_IO_ASSERT_GPR_EQ(_SP, _R, _I)                                 \
     LOCAL_IO_PUSH(_SP)                                                  \
     RVMODEL_IO_WRITE_STR2("|");                                       \
     RVMODEL_IO_WRITE_STR2("\b=\b");                                       \    
     LOCAL_IO_POP(_SP)
-#else
-
-#define RVMODEL_IO_ASSERT_GPR_EQ(_SP, _R, _I)                                 \
-    LOCAL_IO_PUSH(_SP)                                                  \
-    mv          s0, _R;                                                 \
-    li          t5, _I;                                                 \
-    beq         s0, t5, 20002f;                                         \
-    RVMODEL_IO_WRITE_STR2("Test Failed ");                               \
-    RVMODEL_IO_WRITE_STR2(": ");                                         \
-    RVMODEL_IO_WRITE_STR2(# _R);                                         \
-        RVMODEL_IO_WRITE_STR2("( ");                                         \
-    mv      a0, s0;                                                     \
-    jal FN_WriteNmbr;                                                   \
-    RVMODEL_IO_WRITE_STR2(" ) != ");                                     \
-    mv      a0, t5;                                                     \
-    jal FN_WriteNmbr;                                                   \  
-    RVMODEL_IO_WRITE_STR2("\n");                                         \    
-    j 20003f;                                                           \
-20002:                                                                  \
-    RVMODEL_IO_WRITE_STR2("|");                                       \
-    RVMODEL_IO_WRITE_STR2("\b=\b");                                    \
-20003:                                                                  \
-    LOCAL_IO_POP(_SP)
-
-#endif
-
 
 //RVTEST_IO_ASSERT_SFPR_EQ
 #define RVMODEL_IO_ASSERT_SFPR_EQ(_F, _R, _I)
