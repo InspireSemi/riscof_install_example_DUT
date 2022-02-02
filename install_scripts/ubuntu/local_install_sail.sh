@@ -20,9 +20,6 @@ ARCH=RV64 make
 #ln -s sail-riscv/c_emulator/riscv_sim_RV64 /usr/bin/riscv_sim_RV64
 #ln -s sail-riscv/c_emulator/riscv_sim_RV32 /usr/bin/riscv_sim_RV32
 
-# Clone the Sail ref Plugin
-git clone https://github.com/rems-project/sail-riscv.git
-
 # Clone the arch-test repo
 git clone https://github.com/riscv/riscv-arch-test.git
 

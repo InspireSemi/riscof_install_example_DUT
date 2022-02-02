@@ -8,7 +8,7 @@ cd build
 make
 make install
 
-cd ..
+cd ../..
 
 # copy opam 
 cp ./opam/opam-2.1.0-x86_64-linux ~/.local/bin/opam
