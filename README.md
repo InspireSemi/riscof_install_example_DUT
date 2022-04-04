@@ -2,8 +2,7 @@
 Example DUT for riscof as well as install scripts for installing riscof on both Ubuntu and RHEL8
 
 <hr>
-Install under Ubuntu<br>
-<hr>
+<h2>Install under Ubuntu</h2><br>
 
 You will have to have sudo priviliges for the first step:<br> 
 This will install all the dependencis needed for sail/riscof<br>
@@ -32,8 +31,7 @@ Usage: riscof [OPTIONS] COMMAND [ARGS]...
       validateyaml  Validate the Input YAMLs using riscv-config.
 
 <hr>
-Install under RHEL8<br>
-<hr>
+<h2>Install under RHEL8</h2><br>
 
 You will have to have sudo priviliges for the first step:<br> 
 This will install all the dependencis needed for sail/riscof<br>
