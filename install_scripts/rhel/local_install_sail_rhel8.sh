@@ -15,7 +15,8 @@ cp ./opam/opam-2.1.0-x86_64-linux ~/.local/bin/opam
 
 # Setup opam
 opam init -y --disable-sandboxing
-opam switch create ocaml-base-compiler.4.06.1
+# Per RVI use the latest version of ocaml compiler, should be 5.x or later
+#opam switch create ocaml-base-compiler.4.06.1
 opam install sail -y
 eval $(opam config env)
 
